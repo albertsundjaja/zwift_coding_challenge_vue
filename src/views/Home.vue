@@ -22,10 +22,12 @@
             outlined
             dense
             required></v-text-field>
-          <v-btn color="primary">
+          <v-btn color="primary" @click="queryMeteorites">
             Get Meteorite
           </v-btn>
         </v-form>
+
+        <meteorite-list v-if="meteorites.length !== 0"></meteorite-list>
       </v-col>
     </v-row>
   </v-container>
@@ -33,6 +35,9 @@
 
 <script>
 // @ is an alias to /src
+import { mapMutations, mapGetters } from 'vuex'
+import meteoriteList from '@/views/MeteoriteList.vue'
+import axios from 'axios'
 
 export default {
   data () {
@@ -43,6 +48,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('meteorite', [
+      'meteorites'
+    ]),
     inputValueLabel () {
       return 'Please Enter ' + this.selectedFilter
     },
@@ -57,6 +65,23 @@ export default {
   watch: {
     selectedFilter () {
       this.filterValue = ''
+    }
+  },
+  components: {
+    meteoriteList
+  },
+  methods: {
+    ...mapMutations('meteorite', [
+      'setMeteorites'
+    ]),
+    queryMeteorites () {
+      axios.get(`http://localhost:8080/meteorites/?${this.selectedFilter.toLowerCase()}=${this.filterValue}`)
+        .then((res) => {
+          this.setMeteorites(res.data.meteorites)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   }
 }
