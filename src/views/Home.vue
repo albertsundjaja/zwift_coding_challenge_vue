@@ -88,8 +88,9 @@ export default {
             this.errMessage = 'No meteorites found'
           }
         })
-        .catch((err) => {
-          console.log(err)
+        .catch(() => {
+          this.showMessage = true
+          this.errMessage = 'Sorry, there is something wrong with our server'
         })
     }
   }
