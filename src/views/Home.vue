@@ -27,6 +27,9 @@
           </v-btn>
         </v-form>
 
+        <div v-if="showMessage">
+            {{errMessage}}
+        </div>
         <meteorite-list v-if="meteorites.length !== 0"></meteorite-list>
       </v-col>
     </v-row>
@@ -44,7 +47,9 @@ export default {
     return {
       filterValue: '',
       filterItems: ['Year', 'Recclass'],
-      selectedFilter: 'Year'
+      selectedFilter: 'Year',
+      showMessage: false,
+      errMessage: ''
     }
   },
   computed: {
@@ -78,6 +83,10 @@ export default {
       axios.get(`http://localhost:8080/meteorites/?${this.selectedFilter.toLowerCase()}=${this.filterValue}`)
         .then((res) => {
           this.setMeteorites(res.data.meteorites)
+          if (res.data.meteorites.length === 0) {
+            this.showMessage = true
+            this.errMessage = 'No meteorites found'
+          }
         })
         .catch((err) => {
           console.log(err)

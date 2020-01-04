@@ -1,5 +1,20 @@
 <template>
   <div class="container">
+    <GmapMap
+      :center="{lat:10, lng:10}"
+      :zoom="1"
+      map-type-id="terrain"
+      style="width: 500px; height: 300px"
+    >
+      <GmapMarker
+        :key="index"
+        v-for="(m, index) in markers"
+        :position="m.position"
+        :clickable="true"
+        @click="center=m.position"
+        :label="m.text"
+      />
+    </GmapMap>
     <v-select
       v-model="selectedSort"
       label="Sort by mass"
@@ -31,6 +46,21 @@ export default {
     }
   },
   computed: {
+    markers () {
+      let markers = []
+      this.meteorites.forEach((meteorite) => {
+        if (meteorite.geolocation) {
+          markers.push({
+            text: meteorite.name,
+            position: {
+              lng: meteorite.geolocation.coordinates[0],
+              lat: meteorite.geolocation.coordinates[1]
+            }
+          })
+        }
+      })
+      return markers
+    },
     meteorites () {
       let returnedMeteorites = this.$store.getters['meteorite/meteorites'].filter((meteorite) => {
         return meteorite.hasOwnProperty('mass')
